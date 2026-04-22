@@ -4,10 +4,6 @@ export default async function handler(req, res) {
   try {
     const { name } = req.query;
 
-    if (!name) {
-      return res.status(400).send("Missing channel name");
-    }
-
     const url = channels[name];
 
     if (!url) {
@@ -15,21 +11,23 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(url);
-
-    if (!response.ok) {
-      return res.status(500).send("Failed to fetch stream");
-    }
-
     let text = await response.text();
 
-    // نحول كل segment إلى stream واحد مباشر
-    const tsUrl = "https://aaastora.vercel.app/api/ts";
+    const proxyBase = "https%3A%2F%2Fwww.manar2.shop%2Fx1%2F";
+
+    let seq = 638600;
 
     text = text.split("\n").map(line => {
+
       if (line.startsWith("#")) return line;
+
       if (!line.trim()) return line;
 
-      return tsUrl;
+      seq++;
+
+      // تحويل أي رابط إلى شكل encoded مثل طلبك
+      return `${proxyBase}${seq}.js`;
+
     }).join("\n");
 
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
