@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/:name.m3u8",
-      "destination": "/api/bein?name=:name"
+      "source": "/api/bein.m3u8",
+      "destination": "/api/bein?name=bein1"
     }
   ]
 }
