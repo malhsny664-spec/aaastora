@@ -17,21 +17,19 @@ export default async function handler(req, res) {
     const response = await fetch(url);
 
     if (!response.ok) {
-      return res.status(500).send("Failed to fetch source");
+      return res.status(500).send("Failed to fetch stream");
     }
 
     let text = await response.text();
 
-    // مهم: لا نعمل fake ts
-    // فقط نبدل الروابط الداخلية إلى proxy حقيقي
-
-    const base = "https://aaastora.vercel.app/api/ts";
+    // نحول كل segment إلى stream واحد مباشر
+    const tsUrl = "https://aaastora.vercel.app/api/ts";
 
     text = text.split("\n").map(line => {
-      if (line.startsWith("#") || !line.trim()) return line;
+      if (line.startsWith("#")) return line;
+      if (!line.trim()) return line;
 
-      // نحول أي segment إلى stream حقيقي
-      return base;
+      return tsUrl;
     }).join("\n");
 
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
