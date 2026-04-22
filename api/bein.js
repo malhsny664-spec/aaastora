@@ -11,11 +11,18 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(url);
+
+    if (!response.ok) {
+      return res.status(500).send("Source error");
+    }
+
     let text = await response.text();
 
-    const proxyBase = "https%3A%2F%2Fwww.manar2.shop%2Fx1%2F";
+    // 👇 أهم نقطة هنا:
+    // لا نعمل fake URLs
+    // نترك الروابط الأصلية كما هي (direct streaming)
 
-    let seq = 638600;
+    const base = "https://www.manar2.shop";
 
     text = text.split("\n").map(line => {
 
@@ -23,10 +30,10 @@ export default async function handler(req, res) {
 
       if (!line.trim()) return line;
 
-      seq++;
-
-      // تحويل أي رابط إلى شكل encoded مثل طلبك
-      return `${proxyBase}${seq}.js`;
+      // نمرر الرابط كما هو (بدون كسر)
+      return line.startsWith("http")
+        ? line
+        : base + line;
 
     }).join("\n");
 
