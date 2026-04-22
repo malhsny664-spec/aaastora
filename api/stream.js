@@ -1,8 +1,18 @@
+const channels = {
+  onru1: "https://on-tv.site/Blackcode/?action=stream&id=4128&cat=333",
+  onru2: "https://on-tv.site/Blackcode/?action=stream&id=4129&cat=333",
+  onru3: "https://on-tv.site/Blackcode/?action=stream&id=4130&cat=333"
+};
+
 export default async function handler(req, res) {
   try {
-    const { url } = req.query;
+    const { channel } = req.query;
 
-    if (!url) return res.status(400).send("Missing url");
+    const url = channels[channel];
+
+    if (!url) {
+      return res.status(404).send("Channel not found");
+    }
 
     const response = await fetch(url);
     let text = await response.text();
