@@ -1,32 +1,22 @@
-import channels from "../channels.json";
-
 export default async function handler(req, res) {
   try {
-    const { name } = req.query;
+    const { file } = req.query;
 
-    const url = channels[name];
+    if (!file) return res.status(400).send("missing file");
 
-    if (!url) return res.status(404).send("Channel not found");
+    // نفس المصدر الحقيقي
+    const url =
+      "https://on-tv.site/Blackcode/index.php?action=stream&id=4128&cat=333";
 
     const response = await fetch(url);
-    let text = await response.text();
+    const buffer = await response.arrayBuffer();
 
-    let index = 20000;
-
-    text = text.split("\n").map(line => {
-      if (line.startsWith("#")) return line;
-      if (!line.trim()) return line;
-
-      index++;
-      return `https://aaastora.vercel.app/ts?file=${index}.ts`;
-    }).join("\n");
-
-    res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+    res.setHeader("Content-Type", "video/mp2t");
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    return res.status(200).send(text);
+    return res.status(200).send(Buffer.from(buffer));
 
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).send("error");
   }
 }
