@@ -15,10 +15,16 @@ export default async function handler(req, res) {
       }
     });
 
+    if (!response.ok) {
+      return res.status(500).send("Stream error");
+    }
+
+    const buffer = await response.arrayBuffer();
+
     res.setHeader("Content-Type", "video/mp2t");
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    return response.body.pipe(res);
+    return res.status(200).send(Buffer.from(buffer));
 
   } catch (e) {
     return res.status(500).send(e.message);
