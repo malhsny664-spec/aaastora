@@ -6,30 +6,27 @@ export default async function handler(req, res) {
 
     const url = channels[channel];
 
-    if (!url) {
-      return res.status(404).send("Channel not found");
-    }
+    if (!url) return res.status(404).send("Not found");
 
     const response = await fetch(url);
     let text = await response.text();
 
     const base = "https://aaastora.vercel.app";
 
-    // تحويل كل شيء إلى ts وهمي نظيف
+    let index = 27970;
+
     text = text.split("\n").map(line => {
 
       if (line.startsWith("#")) {
-        // إخفاء KEY الحقيقي (اختياري)
-        if (line.includes("URI=")) {
-          return line.replace(/URI=".*?"/, `URI="${base}/key.js"`);
-        }
         return line;
       }
 
       if (!line.trim()) return line;
 
-      // أي segment يتحول إلى ts محمي
-      return base + "/" + Math.floor(Math.random() * 999999) + ".ts";
+      index++;
+
+      // تحويل أي segment إلى TS وهمي
+      return `media_${channel}_${index}.ts`;
 
     }).join("\n");
 
@@ -38,7 +35,7 @@ export default async function handler(req, res) {
 
     return res.status(200).send(text);
 
-  } catch (err) {
-    return res.status(500).send(err.message);
+  } catch (e) {
+    return res.status(500).send(e.message);
   }
 }
