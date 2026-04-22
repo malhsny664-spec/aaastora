@@ -11,29 +11,24 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(url);
-
-    if (!response.ok) {
-      return res.status(500).send("Source error");
-    }
-
     let text = await response.text();
 
-    // 👇 أهم نقطة هنا:
-    // لا نعمل fake URLs
-    // نترك الروابط الأصلية كما هي (direct streaming)
-
-    const base = "https://www.manar2.shop";
+    // 👇 ده السيرفر الأساسي
+    const host = "https://on-tv.site";
 
     text = text.split("\n").map(line => {
 
+      // سيب التعليقات زي ما هي
       if (line.startsWith("#")) return line;
 
       if (!line.trim()) return line;
 
-      // نمرر الرابط كما هو (بدون كسر)
-      return line.startsWith("http")
-        ? line
-        : base + line;
+      // 👇 أهم نقطة: نحول الرابط النسبي لكامل
+      if (line.startsWith("/")) {
+        return host + line;
+      }
+
+      return line;
 
     }).join("\n");
 
