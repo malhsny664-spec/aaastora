@@ -20,17 +20,14 @@ export default async function handler(req, res) {
       if (line.startsWith("#")) return line;
       if (!line.trim()) return line;
 
-      // تحويل الرابط النسبي لكامل
       if (line.startsWith("/")) {
         line = host + line;
       }
 
-      // استخراج الرابط المشفر
       const match = line.match(/url=(.*)/);
 
       if (match) {
         const encoded = match[1];
-
         return `https://aaastora.vercel.app/api/ts?url=${encoded}`;
       }
 
@@ -39,7 +36,6 @@ export default async function handler(req, res) {
     }).join("\n");
 
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "no-store");
 
     return res.status(200).send(text);
